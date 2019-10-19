@@ -1,0 +1,29 @@
+{
+  "name": "emoji-tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "server:start": "forever start ./forever-config.json",
+    "server:restart": "forever restart emojitools",
+    "server:stop": "forever stop emojitools",
+    "server:logs": "forever logs emojitools"
+  },
+  "bin": {
+    "emojitools": "./cli.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^2.6.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "forever": "^1.0.0",
+    "gifwrap": "^0.9.2",
+    "jimp": "^0.8.4"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}

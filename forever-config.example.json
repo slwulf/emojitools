@@ -1,0 +1,7 @@
+{
+    "uid": "emojitools",
+    "script": "server.js",
+    "sourceDir": "/path/to/emojitools",
+    "watch": "true",
+    "append": "true"
+}
