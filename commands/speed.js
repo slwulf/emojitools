@@ -1,5 +1,5 @@
 const Command = require('./command.js')
-const Image = require('../models/image.js')
+const ImageLoader = require('../util/image-loader.js')
 const ImageUploader = require('../util/image-uploader.js')
 
 class Speed extends Command {
@@ -22,10 +22,10 @@ _n_ is in hundredths/second. Pass in \`n%\` to adjust speed by % of original.
             throw new Error(`Speed: Invalid speed value ${this.getSpeed()}`)
         }
 
-        const image = await Image.fromUrl(this.getUrl())
+        const image = await ImageLoader.fromUrl(this.getUrl())
         const speedAdjusted = await image.transformFrames(frame => {
-            frame.delayCentisecs = usePercent
-                ? frame.delayCentisecs / (speed / 100)
+            frame.delay = usePercent
+                ? frame.delay / (speed / 100)
                 : speed
             return frame
         })

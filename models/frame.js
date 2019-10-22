@@ -1,3 +1,4 @@
+const {AUTO} = require('jimp')
 const {GifUtil, GifFrame} = require('gifwrap')
 const Converter = require('../util/converter.js')
 const {DEFAULT_FRAME_DELAY} = require('../constants.js')
@@ -60,12 +61,38 @@ class Frame {
         return Frame.fromGifFrame(this.gifFrame)
     }
 
+    async resize(w, h) {
+        const jimg = this.toJimp()
+        await jimg.resize(w || AUTO, h || AUTO)
+
+        return Frame.fromJimp(jimg)
+    }
+
+    flip(orientation) {
+        const jimg = this.toJimp()
+        jimg.flip(
+            orientation === 'horizontal',
+            orientation === 'vertical'
+        )
+
+        return Frame.fromJimp(jimg)
+    }
+
     reframe(xOffset, yOffset, width, height, fillRGBA) {
         this.queueTransform(gifFrame => {
             gifFrame.reframe(xOffset, yOffset, width, height, fillRGBA)
         })
 
         return this
+    }
+
+    rotate(degrees) {
+        const jimg = this.toJimp()
+        jimg.rotate(degrees)
+
+        const newFrame = Frame.fromJimp(jimg)
+        newFrame.delay = this.delay
+        return newFrame
     }
 
     /** UTILITY */

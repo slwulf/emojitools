@@ -1,5 +1,5 @@
 const Command = require('./command.js')
-const Image = require('../models/image.js')
+const ImageLoader = require('../util/image-loader.js')
 const ImageUploader = require('../util/image-uploader.js')
 
 class Rotate extends Command {
@@ -32,9 +32,9 @@ Direction defaults to clockwise.
             throw new Error('Rotate: Must provide a positive integer for how many degrees to rotate.')
         }
 
-        const image = await Image.fromUrl(this.getUrl())
-        const rotated = await image.transform(
-            jimg => jimg.rotate(isClockwise ? degrees : degrees * -1)
+        const image = await ImageLoader.fromUrl(this.getUrl())
+        const rotated = await image.transformFrames(
+            frame => frame.rotate(isClockwise ? degrees : degrees * -1)
         )
 
         return ImageUploader.upload(rotated)

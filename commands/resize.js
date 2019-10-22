@@ -1,5 +1,5 @@
 const Command = require('./command.js')
-const Image = require('../models/image.js')
+const ImageLoader = require('../util/image-loader.js')
 const ImageUploader = require('../util/image-uploader.js')
 
 class Resize extends Command {
@@ -30,9 +30,9 @@ A width or a height must be provided.
 
         const width = Number(this.flags.width)
         const height = Number(this.flags.height)
-        const image = await Image.fromUrl(this.getUrl())
-        const resized = await image.transform(jimg => {
-            return jimg.resize(width || Image.AUTO, height || Image.AUTO)
+        const image = await ImageLoader.fromUrl(this.getUrl())
+        const resized = image.transformFrames(frame => {
+            return frame.resize(width, height)
         })
 
         return ImageUploader.upload(resized)
