@@ -23,7 +23,7 @@ Orientation defaults to horizontal.
     async render() {
         const {orientation} = this.flags
         const image = await ImageLoader.fromUrl(this.getUrl())
-        const flipped = await image.transform(frame => {
+        const flipped = await image.transformFrames(frame => {
             return frame.flip(orientation)
         })
 
