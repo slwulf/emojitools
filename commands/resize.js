@@ -31,7 +31,7 @@ A width or a height must be provided.
         const width = Number(this.flags.width)
         const height = Number(this.flags.height)
         const image = await ImageLoader.fromUrl(this.getUrl())
-        const resized = image.transformFrames(frame => {
+        const resized = await image.transformFrames(frame => {
             return frame.resize(width, height)
         })
 
