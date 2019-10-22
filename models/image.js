@@ -1,8 +1,8 @@
 const jimp = require('jimp')
 const {GifUtil} = require('gifwrap')
-const Frame = require('../models/frame.js')
-const Converter = require('./converter.js')
-const {flatmap} = require('./array.js')
+const Frame = require('./frame.js')
+const Converter = require('../util/converter.js')
+const {flatmap} = require('../util/array.js')
 const {TMP_PATH, IMGSHARE_URL} = require('../constants.js')
 
 class Image {
@@ -61,7 +61,7 @@ class Image {
 
     // transformation should return Frame, Frame[] or a Promise of either
     async transformFrames(transformation) {
-        const [newFrames] = await Promise.all(this.frames.map(async (frame, i) => {
+        const newFrames = await Promise.all(this.frames.map(async (frame, i) => {
             const newFrame = await transformation(frame, i, this.frames)
 
             // if a frame was split into multiple frames, adjust their speeds
@@ -75,7 +75,7 @@ class Image {
             return newFrame
         }))
 
-        return new Image(newFrames)
+        return new Image(flatmap(newFrames))
     }
 
     /** UTILITY */

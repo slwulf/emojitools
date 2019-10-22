@@ -1,5 +1,5 @@
 const Command = require('./command.js')
-const Image = require('../util/image.js')
+const Image = require('../models/image.js')
 const ImageUploader = require('../util/image-uploader.js')
 
 class Reverse extends Command {

@@ -1,7 +1,7 @@
 const https = require('https')
 const jimp = require('jimp')
 const {GifUtil, GifFrame, BitmapImage} = require('gifwrap')
-const Image = require('../util/image.js')
+const Image = require('../models/image.js')
 
 module.exports = {
     async fromUrl(url) {
