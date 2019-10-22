@@ -1,20 +1,19 @@
 const Canvas = require('../util/canvas.js')
 const Command = require('./command.js')
-const Image = require('../util/image.js')
+const Frame = require('../models/frame.js')
 const ImageUploader = require('../util/image-uploader.js')
-const Converter = require('../util/converter.js')
+const ImageLoader = require('../util/image-loader.js')
+const {generateRandomOffsets} = require('../util/math.js')
 const {TRANSPARENT_BLACK, PARROT_COLORS} = require('../constants.js')
 
 const effectsConfig = {
     '+Intensify': {
         transformation: cmd => cmd.intensify,
-        minFrameCount: 6,
-        useGifwrap: true
+        minFrameCount: 6
     },
     '+Party': {
         transformation: cmd => cmd.party,
-        minFrameCount: PARROT_COLORS.length,
-        useGifwrap: true
+        minFrameCount: PARROT_COLORS.length
     }
 }
 
@@ -33,59 +32,64 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
 
     async render() {
         const effects = this.getEffects()
-        const image = await Image.fromUrl(this.getUrl())
+        const image = await ImageLoader.fromUrl(this.getUrl())
 
-        const effectified = await effects.reduce(async (img, effect) => {
-            if (img.then) img = await img
-
+        const effectified = effects.reduce((img, effect) => {
             const config = effectsConfig[effect]
-            const frameCount = img.framesCount > config.minFrameCount
-                ? img.framesCount
-                : config.minFrameCount
-
-            if (config.useGifwrap) {
-                await img.transformFrames(config.transformation(this), frameCount)
-            } else {
-                await img.transform(config.transformation(this))
-            }
-
-            return img
+            return img.transformFrames(config.transformation(this))
         }, image)
 
-        return ImageUploader.upload(effectified)
+        return ImageUploader.upload(await effectified)
     }
 
-    intensify(frame, i) {
+    intensify(frame, i, frames) {
         // generated using util/math#generateRandomOffsets
-        const offsets = [[6, 14], [-12, 5], [-9, 12], [6, -15], [-18, -19]]
-        const [x, y] = offsets[i % offsets.length]
-        const {width, height} = frame.bitmap
-        const xOffset = x < 0 ? Math.abs(x) : 0
-        const yOffset = y < 0 ? Math.abs(y) : 0
-        const wOffset = width + Math.abs(x)
-        const hOffset = height + Math.abs(y)
+        // const offsets = [[6, 14], [-12, 5], [-9, 12], [6, -15], [-18, -19]]
+        const minFrames = 6
+        const offsetCount = frames.length > minFrames ? 1 : minFrames
+        const {width, height} = frame
+        const offsets = generateRandomOffsets(offsetCount, width / 7)
 
-        frame.reframe(x, y, wOffset, hOffset, TRANSPARENT_BLACK)
-        frame.reframe(xOffset, yOffset, width, height)
-
-        return frame
+        return offsetCount === 1
+            ? intensifyFrame(frame, getIntensifyParams(offsets[0], width, height))
+            : offsets.map(offset => {
+                return intensifyFrame(frame, getIntensifyParams(offset, width, height))
+            })
     }
 
-    async party(frame, i) {
-        const jimg = Converter.toJimp(frame)
-        const png = await Converter.jimpToPngBuffer(jimg)
-        const {width, height} = jimg.bitmap
-        const canvas = await Canvas.fromBitmap({width, height, data: png})
-        const buffer = canvas.getContext(ctx => {
-            ctx.globalCompositeOperation = 'source-atop'
-            ctx.fillStyle = PARROT_COLORS[i % PARROT_COLORS.length]
-            ctx.globalAlpha = 0.5
-            ctx.fillRect(0, 0, width, height)
-        }).toBuffer()
+    async party(frame) {
+        const {width, height} = frame
 
-        const bitmap = Converter.bufferToBitmap({width, height, data: buffer})
-        return Converter.bitmapToGifFrame(bitmap)
+        return await Promise.all(PARROT_COLORS.map(async color => {
+            const canvas = await Canvas.fromFrame(frame)
+            const buffer = canvas.getContext(ctx => {
+                ctx.globalCompositeOperation = 'source-atop'
+                ctx.fillStyle = color
+                ctx.globalAlpha = 0.5
+                ctx.fillRect(0, 0, width, height)
+            }).toBuffer()
+
+            return new Frame(width, height, buffer, frame.delay)
+        }))
     }
+}
+
+function getIntensifyParams([x, y], width, height) {
+    const xOffset = x < 0 ? Math.abs(x) : 0
+    const yOffset = y < 0 ? Math.abs(y) : 0
+    const wOffset = width + Math.abs(x)
+    const hOffset = height + Math.abs(y)
+
+    return {x, y, xOffset, yOffset, wOffset, hOffset}
+}
+
+function intensifyFrame(frame, params) {
+    const {x, y, xOffset, yOffset, wOffset, hOffset} = params
+    const {width, height} = frame
+    return frame
+        .reframe(x, y, wOffset, hOffset, TRANSPARENT_BLACK)
+        .reframe(xOffset, yOffset, width, height)
+        .commitTransforms()
 }
 
 module.exports = Effects

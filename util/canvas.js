@@ -1,5 +1,5 @@
 const _Canvas = require('canvas')
-const {arrayBufferToBuffer} = require('./converter.js')
+const {arrayBufferToBuffer, frameToPngBuffer} = require('./converter.js')
 const {createCanvas, Image} = _Canvas
 
 function loadImage(buffer) {
@@ -12,12 +12,14 @@ function loadImage(buffer) {
 }
 
 class Canvas {
-    static async fromBitmap(bitmap) {
-        const canvas = new Canvas(bitmap.width, bitmap.height)
-        const img = await loadImage(bitmap.data)
+    static async fromFrame(frame) {
+        const {width, height} = frame
+        const canvas = new Canvas(width, height)
+        const pngBuffer = await frameToPngBuffer(frame)
+        const img = await loadImage(pngBuffer)
 
         return canvas.getContext(ctx => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            ctx.clearRect(0, 0, width, height)
             ctx.drawImage(img, 0, 0)
         })
     }

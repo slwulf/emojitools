@@ -1,56 +1,88 @@
 const jimp = require('jimp')
-const {GifUtil, GifFrame, GifCodec, BitmapImage} = require('gifwrap')
-const ImageLoader = require('./image-loader.js')
-const {toJimp, toGifwrap} = require('./converter.js')
+const {GifUtil} = require('gifwrap')
+const Frame = require('../models/frame.js')
+const Converter = require('./converter.js')
+const {flatmap} = require('./array.js')
 const {TMP_PATH, IMGSHARE_URL} = require('../constants.js')
 
 class Image {
     /** INSTANTIATION */
 
-    static async fromUrl(url) {
-        const image = await ImageLoader.fromUrl(url)
-        return new Image(image)
+    static fromUrl(url) {
+        throw new Error('Image.fromUrl is no longer supported! Use ImageLoader.fromUrl instead.')
     }
 
-    constructor(image) {
-        this.image = image
-        this.frameDelay = image.frames
-            ? image.frames.map(({delayCentisecs}) => delayCentisecs)
-            : [] // if there are no frames, delay doesn't matter
+    static fromGif(gif) {
+        const frames = gif.frames.map(Frame.fromGifFrame)
+        return new Image(frames)
     }
 
-    get framesCount() {
-        return this.image.frames ? this.image.frames.length : 1
+    static fromGifFrame(gifFrame) {
+        const frame = Frame.fromGifFrame(gifFrame)
+        return new Image([frame])
     }
 
-    /** UTILITY */
+    constructor(frames = []) {
+        this.frames = frames
+    }
+
+    get frames() {
+        return this._frames
+    }
+
+    set frames(frames) {
+        if (!Array.isArray(frames) || !frames.every(f => f instanceof Frame)) {
+            throw new TypeError(`Image.frames must be an array of Frame instances.`)
+        }
+
+        this._frames = frames
+    }
+
+    /** CORE */
 
     writeToFile(namespace) {
         const prefix = namespace ? namespace + '-' : ''
         const ts = `${Date.now()}`
         const ext = this.getExtension()
         const filename = `${prefix}${ts}.${ext}`
+        const tmpPath = this.getTmpPath(filename)
 
-        if (!this.image.frames) {
+        if (this.frames.length === 1) {
             return new Promise((resolve, reject) => {
-                toJimp(this.image).write(this.getTmpPath(filename), err => {
+                this.toJimp().write(tmpPath, err => {
                     if (err) return reject(err)
                     resolve(filename)
                 })
             })
         }
 
-        return GifUtil.write(this.getTmpPath(filename), this.image.frames)
-            .then(() => filename)
+        return GifUtil.write(tmpPath, this.toGifFrames()).then(() => filename)
     }
 
-    getExtension() {
-        if (this.image.frames) return 'gif'
+    // transformation should return Frame, Frame[] or a Promise of either
+    async transformFrames(transformation) {
+        const [newFrames] = await Promise.all(this.frames.map(async (frame, i) => {
+            const newFrame = await transformation(frame, i, this.frames)
 
-        let jimg = this.getJimp()
-        return Array.isArray(jimg)
-            ? jimg[0].getExtension()
-            : jimg.getExtension()
+            // if a frame was split into multiple frames, adjust their speeds
+            if (Array.isArray(newFrame)) {
+                return newFrame.map(fr => {
+                    fr.delay = frame.delay / newFrame.length
+                    return fr
+                })
+            }
+
+            return newFrame
+        }))
+
+        return new Image(newFrames)
+    }
+
+    /** UTILITY */
+
+    getExtension() {
+        if (this.isAnimated()) return 'gif'
+        return this.toJimp().getExtension()
     }
 
     getTmpPath(filename) {
@@ -61,75 +93,20 @@ class Image {
         return IMGSHARE_URL + filename
     }
 
-    getJimp() {
-        return this.image.frames
-            ? this.image.frames.map(toJimp)
-            : toJimp(this.image)
-    }
-
-    getFrameDelay(frame) {
-        return this.frameDelay[frame]
-    }
-
-    setImage(image) {
-        this.image = image
-    }
-
     isAnimated() {
-        return this.image.frames && this.image.frames.length > 1
+        return this.frames.length > 1
     }
 
-    /** TRANSFORMS */
-
-    // transformation should return a Promise of a Jimp image
-    async transform(transformation) {
-        let jimg = this.getJimp()
-
-        if (Array.isArray(jimg)) {
-            await Promise.all(jimg.map(transformation))
-
-            this.setImage(await (new GifCodec).encodeGif(
-                jimg.map((frame, i) => toGifwrap(frame, this.getFrameDelay(i)))
-            ))
-
-            return this
+    toJimp() {
+        if (this.isAnimated()) {
+            throw new Error('Animated GIFs cannot be converted to Jimp images.')
         }
 
-        await transformation(jimg)
-        this.setImage(toGifwrap(jimg))
-        return this
+        return this.frames[0].toJimp()
     }
 
-    // transformation should return a Promise of a GifFrame
-    async transformFrames(transformation, frameCount) {
-        const frames = this.isAnimated()
-            ? Array.from(
-                { length: frameCount || this.framesCount },
-                (_, i) => this.image.frames[i % this.framesCount]
-            )
-            : Array.from(
-                { length: frameCount },
-                () => toGifwrap(this.getJimp())
-            )
-
-        const newFrames = await Promise.all(frames.map(frame => {
-            // original impl
-            return transformation(frame)
-
-            // new impl
-            // const frame = new Frame.fromGifFrame(sourceFrame) // chg fn arg name
-            // const newFrame = transformation(frame)
-            // if (Array.isArray(newFrame)) {
-            //     // need to change Promise.all(frames.map to flatmap
-            //     return newFrame.map(fr => fr.delay = frame.delay / newFrame.length)
-            // }
-            // return newFrame
-
-            // // in transformation(frame)
-            // const frames = frame.split(4).map(myCoolTransformation)
-        }))
-        this.setImage(await (new GifCodec).encodeGif(newFrames))
-        return this
+    toGifFrames() {
+        return this.frames.map(frame => frame.toGifFrame())
     }
 }
 

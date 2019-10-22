@@ -3,6 +3,23 @@ const {GifUtil, GifFrame, BitmapImage} = require('gifwrap')
 const {DEFAULT_FRAME_DELAY} = require('../constants.js')
 
 module.exports = {
+    libToBuffer({bitmap}) {
+        return bitmap.data
+    },
+    gifFrameToJimp(gifFrame) {
+        return GifUtil.copyAsJimp(jimp, gifFrame)
+    },
+    jimpToGifFrame(jimg) {
+        let bitmap = new BitmapImage(jimg.bitmap)
+        let gifFrame = new GifFrame(bitmap, {delayCentisecs: DEFAULT_FRAME_DELAY})
+        GifUtil.quantizeWu(gifFrame)
+        return gifFrame
+    },
+    frameToPngBuffer(frame) {
+        return frame.toJimp().getBufferAsync(jimp.MIME_PNG)
+    },
+
+    // ???
     arrayBufferToBuffer(ab) {
         let buffer = Buffer.alloc(ab.byteLength);
         let view = new Uint8Array(ab);
