@@ -11,5 +11,8 @@ module.exports = {
             [arr[i], arr[j]] = [arr[j], arr[i]]
         }
         return arr
+    },
+    ofLength(length) {
+        return Array.from({length}, (_, i) => i)
     }
 }

@@ -3,7 +3,7 @@ const Command = require('./command.js')
 const Frame = require('../models/frame.js')
 const ImageUploader = require('../util/image-uploader.js')
 const ImageLoader = require('../util/image-loader.js')
-const {shuffle} = require('../util/array.js')
+const UtilArray = require('../util/array.js')
 const {TRANSPARENT_BLACK, PARROT_COLORS, DEFAULT_FRAME_DELAY} = require('../constants.js')
 
 const effectsConfig = {
@@ -14,6 +14,10 @@ const effectsConfig = {
     '+Party': {
         transformation: cmd => cmd.party,
         supportsGifs: false
+    },
+    '+Spin': {
+        transformation: cmd => cmd.spin,
+        supportsGifs: false // TODO: set this to true
     }
 }
 
@@ -47,7 +51,7 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
     }
 
     intensify(frame, i, frames) {
-        const offsets = shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2]])
+        const offsets = UtilArray.shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2]])
         const {width, height} = frame
 
         return frames.length > offsets.length
@@ -70,6 +74,15 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
             }).toBuffer()
 
             return new Frame(width, height, buffer, frame.delay)
+        }))
+    }
+
+    spin(frame) {
+        const count = UtilArray.ofLength(6)
+        return Promise.all(count.map(n => {
+            const angle = 360 / count.length
+            frame.delay = DEFAULT_FRAME_DELAY / count.length
+            return frame.rotate(angle * n)
         }))
     }
 }

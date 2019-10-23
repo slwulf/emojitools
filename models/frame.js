@@ -36,6 +36,14 @@ class Frame {
         return this._gifFrame
     }
 
+    get jimg() {
+        if (!this._jimg) {
+            this._jimg = this.toJimp()
+        }
+
+        return this._jimg
+    }
+
     clone() {
         const {width, height, buffer, delay} = this
         return new Frame(width, height, buffer, delay)
@@ -47,13 +55,13 @@ class Frame {
 
     /** TRANSFORMS */
 
-    queueTransform(transform) {
-        this.transformQueue.push(transform)
+    queueTransform({transformation, useJimp = false}) {
+        this.transformQueue.push({transformation, useJimp})
     }
 
     commitTransforms() {
-        this.transformQueue.forEach(transform => {
-            transform(this.gifFrame)
+        this.transformQueue.forEach(({transformation, useJimp}) => {
+            transformation(useJimp ? this.jimg : this.gifFrame)
         })
 
         this.transformQueue = []
