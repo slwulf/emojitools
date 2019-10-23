@@ -3,17 +3,17 @@ const Command = require('./command.js')
 const Frame = require('../models/frame.js')
 const ImageUploader = require('../util/image-uploader.js')
 const ImageLoader = require('../util/image-loader.js')
-const {generateRandomOffsets} = require('../util/math.js')
-const {TRANSPARENT_BLACK, PARROT_COLORS} = require('../constants.js')
+const {shuffle} = require('../util/array.js')
+const {TRANSPARENT_BLACK, PARROT_COLORS, DEFAULT_FRAME_DELAY} = require('../constants.js')
 
 const effectsConfig = {
     '+Intensify': {
         transformation: cmd => cmd.intensify,
-        minFrameCount: 6
+        supportsGifs: false
     },
     '+Party': {
         transformation: cmd => cmd.party,
-        minFrameCount: PARROT_COLORS.length
+        supportsGifs: false
     }
 }
 
@@ -34,8 +34,12 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
         const effects = this.getEffects()
         const image = await ImageLoader.fromUrl(this.getUrl())
 
-        const effectified = effects.reduce((img, effect) => {
+        const effectified = effects.reduce(async (img, effect) => {
             const config = effectsConfig[effect]
+            if (img.then) img = await img
+            if (image.isAnimated() && config.supportsGifs === false) {
+                throw new Error(`Effects: Filter ${effect} does not support animated GIFs.`);
+            }
             return img.transformFrames(config.transformation(this))
         }, image)
 
@@ -43,15 +47,11 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
     }
 
     intensify(frame, i, frames) {
-        // generated using util/math#generateRandomOffsets
-        // const offsets = [[6, 14], [-12, 5], [-9, 12], [6, -15], [-18, -19]]
-        const minFrames = 6
-        const offsetCount = frames.length > minFrames ? 1 : minFrames
+        const offsets = shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2]])
         const {width, height} = frame
-        const offsets = generateRandomOffsets(offsetCount, width / 7)
 
-        return offsetCount === 1
-            ? intensifyFrame(frame, getIntensifyParams(offsets[0], width, height))
+        return frames.length > offsets.length
+            ? intensifyFrame(frame, getIntensifyParams(offsets[i % offsets.length], width, height))
             : offsets.map(offset => {
                 return intensifyFrame(frame, getIntensifyParams(offset, width, height))
             })
@@ -86,6 +86,8 @@ function getIntensifyParams([x, y], width, height) {
 function intensifyFrame(frame, params) {
     const {x, y, xOffset, yOffset, wOffset, hOffset} = params
     const {width, height} = frame
+    frame.delay = 0.01
+
     return frame
         .reframe(x, y, wOffset, hOffset, TRANSPARENT_BLACK)
         .reframe(xOffset, yOffset, width, height)
