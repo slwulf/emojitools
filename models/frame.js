@@ -55,7 +55,7 @@ class Frame {
 
     /** TRANSFORMS */
 
-    queueTransform({transformation, useJimp = false}) {
+    queueTransform(transformation, useJimp = false) {
         this.transformQueue.push({transformation, useJimp})
     }
 
