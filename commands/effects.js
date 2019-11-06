@@ -1,6 +1,7 @@
 const Canvas = require('../util/canvas.js')
 const Command = require('./command.js')
 const Frame = require('../models/frame.js')
+const Asset = require('../models/asset.js')
 const ImageUploader = require('../util/image-uploader.js')
 const ImageLoader = require('../util/image-loader.js')
 const UtilArray = require('../util/array.js')
@@ -18,6 +19,10 @@ const effectsConfig = {
     '+Spin': {
         transformation: cmd => cmd.spin,
         supportsGifs: false // TODO: set this to true
+    },
+    '+Cool': {
+        transformation: cmd => cmd.cool,
+        supportsGifs: true
     }
 }
 
@@ -84,6 +89,12 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
             frame.delay = DEFAULT_FRAME_DELAY / count.length
             return frame.rotate(angle * n)
         }))
+    }
+
+    async cool(frame) {
+        const asset = new Asset('sunglasses-top')
+        const sunglasses = await Frame.fromAsset(asset)
+        return frame.overlay(sunglasses)
     }
 }
 

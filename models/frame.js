@@ -1,6 +1,8 @@
-const {AUTO} = require('jimp')
+const jimp = require('jimp')
+const {AUTO} = jimp
 const {GifUtil, GifFrame} = require('gifwrap')
 const Converter = require('../util/converter.js')
+const {resizeForCompositing} = require('../util/frame.js')
 const {DEFAULT_FRAME_DELAY} = require('../constants.js')
 
 class Frame {
@@ -13,6 +15,11 @@ class Frame {
     static fromJimp(jimg) {
         const gifFrame = Converter.jimpToGifFrame(jimg)
         return Frame.fromGifFrame(gifFrame)
+    }
+
+    static async fromAsset(asset) {
+        const jimg = await jimp.read(asset.getPath())
+        return Frame.fromJimp(jimg)
     }
 
     constructor(width, height, buffer, delay = DEFAULT_FRAME_DELAY) {
@@ -97,6 +104,16 @@ class Frame {
     rotate(degrees) {
         const jimg = this.toJimp()
         jimg.rotate(degrees)
+
+        const newFrame = Frame.fromJimp(jimg)
+        newFrame.delay = this.delay
+        return newFrame
+    }
+
+    async overlay(frame) {
+        const [bottom, top] = await resizeForCompositing(this, frame)
+        const jimg = bottom.toJimp()
+        jimg.composite(top.toJimp(), 0, 0)
 
         const newFrame = Frame.fromJimp(jimg)
         newFrame.delay = this.delay
