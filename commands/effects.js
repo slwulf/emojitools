@@ -55,15 +55,16 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
         return ImageUploader.upload(await effectified)
     }
 
-    intensify(frame, i, frames) {
-        const offsets = UtilArray.shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2]])
+    intensify(frame) {
+        const offsets = UtilArray.shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2], [-6, 3]])
         const {width, height} = frame
 
-        return frames.length > offsets.length
-            ? intensifyFrame(frame, getIntensifyParams(offsets[i % offsets.length], width, height))
-            : offsets.map(offset => {
-                return intensifyFrame(frame, getIntensifyParams(offset, width, height))
-            })
+        // Make a bigger frame so we can move things around
+        let biggerFrame = frame.reframe(-6, -6, width + 6, height + 6, TRANSPARENT_BLACK).commitTransforms()
+
+        return offsets.map(offset => {
+            return intensifyFrame(biggerFrame, offset)
+        })
     }
 
     async party(frame) {
@@ -98,23 +99,13 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
     }
 }
 
-function getIntensifyParams([x, y], width, height) {
-    const xOffset = x < 0 ? Math.abs(x) : 0
-    const yOffset = y < 0 ? Math.abs(y) : 0
-    const wOffset = width + Math.abs(x)
-    const hOffset = height + Math.abs(y)
-
-    return {x, y, xOffset, yOffset, wOffset, hOffset}
-}
-
-function intensifyFrame(frame, params) {
-    const {x, y, xOffset, yOffset, wOffset, hOffset} = params
+function intensifyFrame(frame, [x, y]) {
     const {width, height} = frame
     frame.delay = 0.01
 
     return frame
-        .reframe(x, y, wOffset, hOffset, TRANSPARENT_BLACK)
-        .reframe(xOffset, yOffset, width, height)
+        .reframe(x, y, width + 6, height + 6, TRANSPARENT_BLACK)
+        .reframe(0, 0, width, height)
         .commitTransforms()
 }
 
