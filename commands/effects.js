@@ -21,7 +21,15 @@ const effectsConfig = {
         supportsGifs: false // TODO: set this to true
     },
     '+Cool': {
-        transformation: cmd => cmd.cool,
+        transformation: cmd => cmd.overlayAsset('sunglasses-top'),
+        supportsGifs: true
+    },
+    '+Thinking': {
+        transformation: cmd => cmd.overlayAsset('thinking-hand'),
+        supportsGifs: true
+    },
+    '+Cowboy': {
+        transformation: cmd => cmd.overlayAsset('cowboy-hat'),
         supportsGifs: true
     }
 }
@@ -91,10 +99,12 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
         }))
     }
 
-    async cool(frame) {
-        const asset = new Asset('sunglasses-top')
-        const sunglasses = await Frame.fromAsset(asset)
-        return frame.overlay(sunglasses)
+    overlayAsset(assetName) {
+        return async frame => {
+            const asset = new Asset(assetName)
+            const overlay = await Frame.fromAsset(asset)
+            return frame.overlay(overlay)
+        }
     }
 }
 
