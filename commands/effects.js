@@ -10,7 +10,7 @@ const {TRANSPARENT_BLACK, PARROT_COLORS, DEFAULT_FRAME_DELAY} = require('../cons
 const effectsConfig = {
     '+Intensify': {
         transformation: cmd => cmd.intensify,
-        supportsGifs: false
+        supportsGifs: true
     },
     '+Party': {
         transformation: cmd => cmd.party,
@@ -68,11 +68,11 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
         const {width, height} = frame
 
         // Make a bigger frame so we can move things around
-        let biggerFrame = frame.reframe(-6, -6, width + 6, height + 6, TRANSPARENT_BLACK).commitTransforms()
+        let biggerFrame = frame
+            .reframe(-6, -6, width + 6, height + 6, TRANSPARENT_BLACK)
+            .commitTransforms()
 
-        return offsets.map(offset => {
-            return intensifyFrame(biggerFrame, offset)
-        })
+        return offsets.map(offset => intensifyFrame(biggerFrame, offset))
     }
 
     async party(frame) {
