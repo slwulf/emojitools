@@ -14,5 +14,8 @@ module.exports = {
     },
     ofLength(length) {
         return Array.from({length}, (_, i) => i)
+    },
+    randomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
     }
 }

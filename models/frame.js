@@ -51,13 +51,13 @@ class Frame {
         return this._jimg
     }
 
-    clone() {
+    clone(input_delay) {
         const {width, height, buffer, delay} = this
-        return new Frame(width, height, buffer, delay)
+        return new Frame(width, height, buffer, input_delay || delay)
     }
 
-    split(n) {
-        return Array.from({length: n}, () => this.clone())
+    split(n, delay) {
+        return Array.from({length: n}, () => this.clone(delay))
     }
 
     /** TRANSFORMS */

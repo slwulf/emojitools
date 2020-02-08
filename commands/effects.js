@@ -8,10 +8,6 @@ const UtilArray = require('../util/array.js')
 const {TRANSPARENT_BLACK, PARROT_COLORS, DEFAULT_FRAME_DELAY} = require('../constants.js')
 
 const effectsConfig = {
-    '+Intensify': {
-        transformation: cmd => cmd.intensify,
-        supportsGifs: true
-    },
     '+Party': {
         transformation: cmd => cmd.party,
         supportsGifs: false
@@ -63,18 +59,6 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
         return ImageUploader.upload(await effectified)
     }
 
-    intensify(frame) {
-        const offsets = UtilArray.shuffle([[0, 4], [-4, 6], [2, -6], [-2, 4], [6, -2], [-6, 3]])
-        const {width, height} = frame
-
-        // Make a bigger frame so we can move things around
-        let biggerFrame = frame
-            .reframe(-6, -6, width + 6, height + 6, TRANSPARENT_BLACK)
-            .commitTransforms()
-
-        return offsets.map(offset => intensifyFrame(biggerFrame, offset))
-    }
-
     async party(frame) {
         const {width, height} = frame
 
@@ -107,16 +91,6 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
             return frame.overlay(overlay)
         }
     }
-}
-
-function intensifyFrame(frame, [x, y]) {
-    const {width, height} = frame
-    frame.delay = 0.01
-
-    return frame
-        .reframe(x, y, width + 6, height + 6, TRANSPARENT_BLACK)
-        .reframe(0, 0, width, height)
-        .commitTransforms()
 }
 
 module.exports = Effects
