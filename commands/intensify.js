@@ -23,7 +23,8 @@ class Intensify extends Command {
 
         let last_offset;
         const intensified_frames = expanded_and_split_frames.map((frame, index) => {
-            const [offset_x, offset_y] = this.getOffset(last_offset);
+            last_offset = this.getOffset(last_offset);
+            const [offset_x, offset_y] = last_offset;
             return this.intensifyFrame(frame, offset_x, offset_y);
         });
 
@@ -32,8 +33,9 @@ class Intensify extends Command {
 
     // Temporally split into subframes based on existing delay + new delay. For
     // now we're going to ignore remainders.  TODO: more math?
-    splitFrame(frame, new_frame_delay) {
-        const new_frame_count = Math.floor(frame['delay'] / new_frame_delay);
+    splitFrame(frame, frame_delay) {
+        const new_frame_delay = Math.min(frame_delay, frame['delay']);
+        const new_frame_count = Math.floor(frame['delay'] / new_frame_delay) || 1;
         return frame.split(new_frame_count, new_frame_delay);
     }
 
