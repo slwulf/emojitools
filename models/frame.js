@@ -110,13 +110,13 @@ class Frame {
         return newFrame
     }
 
-    async overlay(frame) {
+    async overlay(frame, delay) {
         const [bottom, top] = await resizeForCompositing(this, frame)
         const jimg = bottom.toJimp()
         jimg.composite(top.toJimp(), 0, 0)
 
         const newFrame = Frame.fromJimp(jimg)
-        newFrame.delay = this.delay
+        newFrame.delay = delay || this.delay
         return newFrame
     }
 

@@ -1,5 +1,6 @@
 const Canvas = require('../util/canvas.js')
 const Command = require('./command.js')
+const Image = require('../models/image.js')
 const Frame = require('../models/frame.js')
 const Asset = require('../models/asset.js')
 const ImageUploader = require('../util/image-uploader.js')
@@ -31,6 +32,10 @@ const effectsConfig = {
     '+Cowboy': {
         transformation: cmd => cmd.overlayAsset('cowboy-hat'),
         supportsGifs: true
+    },
+    '+Crying': {
+        transformation: cmd => cmd.overlayAnimatedAsset('tears'),
+        supportsGifs: false
     }
 }
 
@@ -105,6 +110,16 @@ _Known effects:_ ${Object.keys(effectsConfig).join(', ')}
             const asset = new Asset(assetName)
             const overlay = await Frame.fromAsset(asset)
             return frame.overlay(overlay)
+        }
+    }
+
+    overlayAnimatedAsset(assetName) {
+        return async frame => {
+            const asset = new Asset(assetName)
+            const overlay = await Image.fromAsset(asset)
+            return Promise.all(overlay.frames.map(fr => {
+                return frame.overlay(fr, fr.delay)
+            }))
         }
     }
 }

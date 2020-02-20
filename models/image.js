@@ -22,6 +22,11 @@ class Image {
         return new Image([frame])
     }
 
+    static async fromAsset(asset) {
+        const gif = await GifUtil.read(asset.getPath())
+        return Image.fromGif(gif)
+    }
+
     constructor(frames = []) {
         this.frames = frames
     }
@@ -61,18 +66,8 @@ class Image {
 
     // transformation should return Frame, Frame[] or a Promise of either
     async transformFrames(transformation) {
-        const newFrames = await Promise.all(this.frames.map(async (frame, i) => {
-            const newFrame = await transformation(frame, i, this.frames)
-
-            // if a frame was split into multiple frames, adjust their speeds
-            if (Array.isArray(newFrame)) {
-                return newFrame.map(fr => {
-                    fr.delay = frame.delay / newFrame.length
-                    return fr
-                })
-            }
-
-            return newFrame
+        const newFrames = await Promise.all(this.frames.map((frame, i) => {
+            return transformation(frame, i, this.frames)
         }))
 
         return new Image(flatmap(newFrames))
