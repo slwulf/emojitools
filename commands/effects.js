@@ -40,6 +40,10 @@ const effectsConfig = {
     '+Fire': {
         transformation: cmd => cmd.overlayAnimatedAsset('fire'),
         supportsGifs: false
+    },
+    '+DealWithIt': {
+        transformation: cmd => cmd.overlayAnimatedAsset('deal-with-it'),
+        supportsGifs: false
     }
 }
 
