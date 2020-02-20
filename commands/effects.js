@@ -51,7 +51,7 @@ class Effects extends Command {
     static help() {
         return `
 *Usage:* \`emojitools effects <effect> [effect [effect [...]]] <url>\`
-_Known effects:_ ${Object.keys(effectsConfig).join(', ').sort()}
+_Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
 `
     }
 
