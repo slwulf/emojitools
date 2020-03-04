@@ -2,6 +2,7 @@ const Command = require('./command.js')
 const Image = require('../models/image.js')
 const ImageLoader = require('../util/image-loader.js')
 const ImageUploader = require('../util/image-uploader.js')
+const {resizeAllForCompositing} = require('../util/frame.js')
 
 class Append extends Command {
     static help() {
@@ -39,11 +40,15 @@ Optionally pass in a \`--delay\` in ms (default is 60.)
             if (image.isAnimated()) {
                 throw new Error('Append: Animated GIFs are not supported.')
             }
-            frame.delay = this.flags.delay
             return frame
         }))
 
-        return ImageUploader.upload(new Image(frames))
+        const resized = (await resizeAllForCompositing(frames)).map(frame => {
+            frame.delay = this.flags.delay
+            return frame
+        })
+
+        return ImageUploader.upload(new Image(resized))
     }
 }
 

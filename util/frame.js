@@ -16,5 +16,12 @@ module.exports = {
             let sizes = widthB > heightB ? [widthA] : [null, heightA]
             return [frameA, await frameB.resize(...sizes)]
         }
+    },
+    async resizeAllForCompositing(frames) {
+        const areas = frames.map(frame => frame.width * frame.height)
+        const smallest = Math.min(...areas)
+        const {width, height} = frames[areas.indexOf(smallest)]
+        const sizes = width > height ? [width] : [null, height]
+        return await Promise.all(frames.map(frame => frame.resize(...sizes)))
     }
 }
