@@ -1,3 +1,4 @@
+const jimp = require('jimp')
 const Canvas = require('../util/canvas.js')
 const Command = require('./command.js')
 const Image = require('../models/image.js')
@@ -105,12 +106,26 @@ _Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
     }
 
     spin(frame) {
-        const count = UtilArray.ofLength(6)
-        return Promise.all(count.map(n => {
-            const angle = 360 / count.length
-            frame.delay = DEFAULT_FRAME_DELAY / count.length
-            return frame.rotate(angle * n)
-        }))
+            const count = UtilArray.ofLength(6)
+            const {width, height} = frame
+            const isSquare = width === height
+            let resized = null
+
+            if (!isSquare) {
+                let edgeLength = Math.max(width, height)
+                let xOffset = (width - edgeLength) / 2
+                let yOffset = (height - edgeLength) / 2
+                resized = frame
+                    .reframe(xOffset, yOffset, edgeLength, edgeLength, TRANSPARENT_BLACK)
+                    .commitTransforms()
+            }
+
+            return Promise.all(count.map(n => {
+                const angle = 360 / count.length
+
+                // false here tells Jimp not to resize the frame on rotation
+                return (resized || frame).rotate(-1 * angle * n, false)
+            }))
     }
 
     overlayAsset(assetName) {

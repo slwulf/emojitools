@@ -101,9 +101,9 @@ class Frame {
         return this
     }
 
-    rotate(degrees) {
+    rotate(degrees, mode = jimp.RESIZE_BILINEAR) {
         const jimg = this.toJimp()
-        jimg.rotate(degrees)
+        jimg.rotate(degrees, mode)
 
         const newFrame = Frame.fromJimp(jimg)
         newFrame.delay = this.delay
