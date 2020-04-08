@@ -1,4 +1,3 @@
-const jimp = require('jimp')
 const Canvas = require('../util/canvas.js')
 const Command = require('./command.js')
 const Image = require('../models/image.js')
@@ -7,7 +6,7 @@ const Asset = require('../models/asset.js')
 const ImageUploader = require('../util/image-uploader.js')
 const ImageLoader = require('../util/image-loader.js')
 const UtilArray = require('../util/array.js')
-const {TRANSPARENT_BLACK, PARROT_COLORS, DEFAULT_FRAME_DELAY} = require('../constants.js')
+const {TRANSPARENT_BLACK, PARROT_COLORS} = require('../constants.js')
 
 const effectsConfig = {
     '+Intensify': {
@@ -32,6 +31,10 @@ const effectsConfig = {
     },
     '+Cowboy': {
         transformation: cmd => cmd.overlayAsset('cowboy-hat'),
+        supportsGifs: true
+    },
+    '+No': {
+        transformation: cmd => cmd.overlayAsset('no'),
         supportsGifs: true
     },
     '+Crying': {
