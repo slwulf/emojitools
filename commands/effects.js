@@ -48,6 +48,10 @@ const effectsConfig = {
     '+DealWithIt': {
         transformation: cmd => cmd.overlayAnimatedAsset('deal-with-it'),
         supportsGifs: false
+    },
+    '+ShakeFist': {
+        transformation: cmd => cmd.overlayAnimatedAsset('shake-fist'),
+        supportsGifs: false
     }
 }
 
