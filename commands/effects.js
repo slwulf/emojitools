@@ -63,17 +63,34 @@ _Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
 `
     }
 
-    getEffects() {
-        const effects = Object.keys(effectsConfig)
-        return this.inputs.filter(i => effects.includes(i))
+    isKnownEffect(name) {
+        const effects = Object.keys(effectsConfig).map(k => k.toLowerCase())
+        return effects.includes(name.toLowerCase())
+    }
+
+    getEffectConfigs() {
+        const names = Object.keys(effectsConfig).reduce((keys, key) => {
+            keys[key.toLowerCase()] = key
+            return keys
+        }, {})
+
+        return this.inputs.reduce((configs, input) => {
+            if (input.indexOf('+') !== 0) return configs
+            if (!this.isKnownEffect(input)) {
+                throw new Error(`Effects: Unknown effect "${input}"`)
+            }
+
+            let name = names[input.toLowerCase()]
+            configs.push(effectsConfig[name])
+            return configs
+        }, [])
     }
 
     async render() {
-        const effects = this.getEffects()
+        const configs = this.getEffectConfigs()
         const image = await ImageLoader.fromUrl(this.getUrl())
 
-        const effectified = effects.reduce(async (img, effect) => {
-            const config = effectsConfig[effect]
+        const effectified = configs.reduce(async (img, config) => {
             if (img.then) img = await img
             if (image.isAnimated() && config.supportsGifs === false) {
                 throw new Error(`Effects: Filter ${effect} does not support animated GIFs.`);
