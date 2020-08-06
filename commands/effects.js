@@ -90,10 +90,10 @@ _Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
         const configs = this.getEffectConfigs()
         const image = await ImageLoader.fromUrl(this.getUrl())
 
-        const effectified = configs.reduce(async (img, config) => {
+        const effectified = configs.reduce(async (img, config, i) => {
             if (img.then) img = await img
             if (image.isAnimated() && config.supportsGifs === false) {
-                throw new Error(`Effects: Filter ${effect} does not support animated GIFs.`);
+                throw new Error(`Effects: Filter ${this.inputs[i]} does not support animated GIFs.`);
             }
             return img.transformFrames(config.transformation(this))
         }, image)
