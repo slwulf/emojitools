@@ -1,16 +1,11 @@
 const jimp = require('jimp')
 const {GifUtil} = require('gifwrap')
 const Frame = require('./frame.js')
-const Converter = require('../util/converter.js')
 const {flatmap} = require('../util/array.js')
-const {TMP_PATH, IMGSHARE_URL} = require('../constants.js')
+const {TMP_PATH} = require('../constants.js')
 
 class Image {
     /** INSTANTIATION */
-
-    static fromUrl(url) {
-        throw new Error('Image.fromUrl is no longer supported! Use ImageLoader.fromUrl instead.')
-    }
 
     static fromGif(gif) {
         const frames = gif.frames.map(Frame.fromGifFrame)
@@ -82,10 +77,6 @@ class Image {
 
     getTmpPath(filename) {
         return TMP_PATH + filename
-    }
-
-    getImgshareUrl(filename) {
-        return IMGSHARE_URL + filename
     }
 
     isAnimated() {
