@@ -2,8 +2,6 @@ const commands = require('fs').readdirSync('./commands')
         .filter(fn => fn.indexOf('command') !== 0)
         .map(fn => fn.replace('.js', ''))
 
-require('dotenv').config()
-
 async function EmojiTools(command, inputs, flags) {
     const isDebug = flags.hasOwnProperty('debug')
     const Command = loadCommand(command, isDebug)
