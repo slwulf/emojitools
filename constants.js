@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 module.exports = {
     TMP_PATH: process.env.EMOJITOOLS_TMP_PATH || '/tmp/emojitools',
     DEFAULT_FRAME_DELAY: 20,

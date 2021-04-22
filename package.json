@@ -3,17 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "start": "nodemon server.js",
-    "server:start": "forever start ./forever-config.json",
-    "server:restart": "forever restart emojitools",
-    "server:stop": "forever stop emojitools",
-    "server:logs": "forever logs emojitools"
-  },
+  "scripts": {},
   "bin": {
     "emojitools": "./cli.js"
   },
-  "author": "",
+  "author": "Sarah Wulf <sarahlwulf@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "canvas": "^2.6.0",
