@@ -1,23 +1,32 @@
 {
   "name": "emojitools",
   "version": "0.1.0",
-  "description": "",
+  "description": "the cool slack emoji manipulation interface for cool kids",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slwulf/emojitools.git"
+  },
   "main": "index.js",
   "scripts": {},
   "bin": {
     "emojitools": "./cli.js"
   },
+  "files": [
+    "index.js",
+    "cli.js",
+    "constants.js",
+    "assets",
+    "commands",
+    "models",
+    "util"
+  ],
   "author": "Sarah Wulf <sarahlwulf@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "canvas": "^2.6.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "forever": "^1.0.0",
     "gifwrap": "^0.9.2",
     "jimp": "^0.8.4"
   },
-  "devDependencies": {
-    "nodemon": "^1.19.4"
-  }
+  "devDependencies": {}
 }
