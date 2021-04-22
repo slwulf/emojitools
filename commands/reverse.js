@@ -13,7 +13,7 @@ class Reverse extends Command {
             return frames[(frames.length - 1) - i]
         })
 
-        return ImageUploader.upload(reversed)
+        return reversed
     }
 }
 

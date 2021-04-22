@@ -35,7 +35,7 @@ A width or a height must be provided.
             return frame.resize(width, height)
         })
 
-        return ImageUploader.upload(resized)
+        return resized
     }
 }
 

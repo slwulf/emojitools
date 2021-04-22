@@ -98,7 +98,7 @@ _Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
             return img.transformFrames(config.transformation(this))
         }, image)
 
-        return ImageUploader.upload(await effectified)
+        return (await effectified)
     }
 
     intensify(frame) {

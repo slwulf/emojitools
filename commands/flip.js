@@ -27,7 +27,7 @@ Orientation defaults to horizontal.
             return frame.flip(orientation)
         })
 
-        return ImageUploader.upload(flipped)
+        return flipped
     }
 }
 

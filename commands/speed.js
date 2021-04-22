@@ -30,7 +30,7 @@ _n_ is in hundredths/second. Pass in \`n%\` to adjust speed by % of original.
             return frame
         })
 
-        return ImageUploader.upload(speedAdjusted)
+        return speedAdjusted
     }
 }
 
