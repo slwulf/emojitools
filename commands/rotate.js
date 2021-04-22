@@ -37,7 +37,7 @@ Direction defaults to clockwise.
             frame => frame.rotate(isClockwise ? degrees : degrees * -1)
         )
 
-        return ImageUploader.upload(rotated)
+        return rotated
     }
 }
 

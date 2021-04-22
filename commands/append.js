@@ -1,7 +1,6 @@
 const Command = require('./command.js')
 const Image = require('../models/image.js')
 const ImageLoader = require('../util/image-loader.js')
-const ImageUploader = require('../util/image-uploader.js')
 const {resizeAllForCompositing} = require('../util/frame.js')
 
 class Append extends Command {
@@ -48,7 +47,7 @@ Optionally pass in a \`--delay\` in ms (default is 60.)
             return frame
         })
 
-        return ImageUploader.upload(new Image(resized))
+        return new Image(resized)
     }
 }
 
