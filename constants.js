@@ -1,7 +1,5 @@
 module.exports = {
-    IMGSHARE_SSH: process.env.IMGSHARE_SSH,
-    IMGSHARE_URL: process.env.IMGSHARE_URL,
-    TMP_PATH: process.env.TMP_PATH,
+    TMP_PATH: process.env.EMOJITOOLS_TMP_PATH || '/tmp/emojitools',
     DEFAULT_FRAME_DELAY: 20,
     TRANSPARENT_BLACK: 0x00000000,
     PARROT_COLORS: [
