@@ -14,7 +14,7 @@ app.command('/emojitools', async ({ command, ack, say }) => {
     const filepath = await image.writeToFile()
 
     await app.client.files.upload({
-        filename: image.getTmpPath(),
+        filename: image.filename,
         file: fs.createReadStream(filepath),
         channels: [/* channel IDs */]
     })
