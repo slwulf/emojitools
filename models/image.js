@@ -1,5 +1,6 @@
 const jimp = require('jimp')
 const {GifUtil} = require('gifwrap')
+const path = require('path')
 const Frame = require('./frame.js')
 const {flatmap} = require('../util/array.js')
 const {TMP_PATH} = require('../constants.js')
@@ -58,12 +59,12 @@ class Image {
             return new Promise((resolve, reject) => {
                 this.toJimp().write(tmpPath, err => {
                     if (err) return reject(err)
-                    resolve(this.filename)
+                    resolve(tmpPath)
                 })
             })
         }
 
-        return GifUtil.write(tmpPath, this.toGifFrames()).then(() => this.filename)
+        return GifUtil.write(tmpPath, this.toGifFrames()).then(() => tmpPath)
     }
 
     // transformation should return Frame, Frame[] or a Promise of either
@@ -83,7 +84,7 @@ class Image {
     }
 
     getTmpPath() {
-        return TMP_PATH + this.filename
+        return path.join(TMP_PATH, this.filename)
     }
 
     isAnimated() {

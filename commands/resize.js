@@ -1,6 +1,5 @@
 const Command = require('./command.js')
 const ImageLoader = require('../util/image-loader.js')
-const ImageUploader = require('../util/image-uploader.js')
 
 class Resize extends Command {
     static help() {
