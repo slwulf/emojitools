@@ -1,5 +1,4 @@
-README.md
-## `emojitools`
+# `emojitools`
 _the cool slack emoji manipulation interface for cool kids_
 
 ### Usage
@@ -21,21 +20,23 @@ Emojitools.fromCommandLineInput(cli)
     .then(filepath => console.log(filepath))
 ```
 
-Emojitools is intended to be used in a command line or chat interface, so it's used by passing `EmojiTools.fromCommandLineInput` some user input. The package exposes an image interface as its execution result that allows you to access or further modify a command's output. Read below for more details on working with the image output.
+Emojitools is intended to be used as a command line or chat bot interface, so its primary surface is the method `EmojiTools.fromCommandLineInput`, which receives raw user input.
 
-The CLI interface has built-in help text for each command. Entering `emojitools --help` will expose a list of commands, and `emojitools <command> --help` describes each command and its inputs.
+The package exposes an image interface as its execution result that allows you to access or further modify a command's output. Read below for more details on working with the image output.
 
-### Interface
+The command line interface has built-in help text for each command. Entering `emojitools --help` will expose a list of commands, and `emojitools <command> --help` describes each command and its inputs.
 
-#### `Emojitools.fromCommandLineInput(cli[, opts])`
-    - `cli` _string_ the command line input (shouldn't start with "emojitools")
-    - `opts` _object_ render and behavior options
-Returns a promise that resolves to an `Image` instance.
+### API Documentation
+
+- **`Emojitools.fromCommandLineInput(cli[, opts])`**
+    - `cli` _\(string\)_ the command line input
+    - `opts` _\(object\)_ render and behavior options
+    - Returns a Promise that resolves to an [`Image`](models/image.js) instance.
 
 TODO document error handling
 TODO add an option for slackdown vs text-only help text
     - pass the param into the help method and let commands decide what to return
 
-##### Working with image output
+### Working with image output
 
 TODO document the Image class
