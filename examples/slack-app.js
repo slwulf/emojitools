@@ -1,5 +1,6 @@
 const Bolt = require('@slack/bolt')
 const Emojitools = require('@slwulf/emojitools')
+const fs = require('fs')
 
 const app = new Bolt.App({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -10,8 +11,13 @@ app.command('/emojitools', async ({ command, ack, say }) => {
     await ack()
 
     const image = await Emojitools.fromCommandLineInput(command.text)
+    const filepath = await image.writeToFile()
 
-    // do something with image
+    await app.client.files.upload({
+        filename: image.getTmpPath(),
+        file: fs.createReadStream(filepath),
+        channels: [/* channel IDs */]
+    })
 
     await say('Done!');
 })
