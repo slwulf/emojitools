@@ -2,7 +2,7 @@ const commands = require('fs').readdirSync('./commands')
         .filter(fn => fn.indexOf('command') !== 0)
         .map(fn => fn.replace('.js', ''))
 
-async function EmojiTools(command, inputs, flags) {
+async function Emojitools(command, inputs, flags) {
     const isDebug = flags.hasOwnProperty('debug')
     const Command = loadCommand(command, isDebug)
 
@@ -14,8 +14,8 @@ async function EmojiTools(command, inputs, flags) {
     return new Command(inputs, flags).render()
 }
 
-EmojiTools.fromRaw = function(raw) {
-    const [command, ...args] = raw.split(' ')
+Emojitools.fromCommandLineInput = function(cli) {
+    const [command, ...args] = cli.split(' ')
     const inputs = args.filter(a => a.indexOf('-') !== 0)
     const flags = args.filter(a => a.indexOf('-') === 0)
         .map(flag => flag.replace(/-/g, '').split('='))
@@ -24,11 +24,11 @@ EmojiTools.fromRaw = function(raw) {
             return obj
         }, {})
 
-    return EmojiTools(command, inputs, flags)
+    return Emojitools(command, inputs, flags)
 }
 
-// TODO: this enables programattic use like `EmojiTools.Commands.Reverse(url)`
-// EmojiTools.Commands = commands.reduce((obj, cmd) => {
+// TODO: this enables programattic use like `Emojitools.Commands.Reverse(url)`
+// Emojitools.Commands = commands.reduce((obj, cmd) => {
 //     const key = cmd[0].toUpperCase() + cmd.substring(1)
 //     obj[key] = (url, flags = {}, inputs = []) => {
 //         const Command = loadCommand(command)
@@ -54,4 +54,4 @@ function getHelpDoc(Command) {
           '_For command options:_ `emojitools <command> --help`'
 }
 
-module.exports = EmojiTools
+module.exports = Emojitools

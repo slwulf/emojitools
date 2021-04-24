@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-const EmojiTools = require('./index.js')
+const Emojitools = require('./index.js')
 
 ;(function() {
     const [,, ...input] = process.argv
     const isDebug = input.includes('--debug')
 
-    EmojiTools.fromRaw(input.join(' '))
+    Emojitools.fromCommandLineInput(input.join(' '))
         .then(result => console.log(result))
         .catch(err => {
             if (isDebug) console.error(err)
