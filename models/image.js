@@ -38,25 +38,32 @@ class Image {
         this._frames = frames
     }
 
+    get filename() {
+        if (!this._filename) {
+            const prefix = 'emojitools-'
+            const ts = `${Date.now()}`
+            const ext = this.getExtension()
+            this._filename = `${prefix}${ts}.${ext}`
+        }
+
+        return this._filename
+    }
+
     /** CORE */
 
-    writeToFile(namespace) {
-        const prefix = namespace ? namespace + '-' : ''
-        const ts = `${Date.now()}`
-        const ext = this.getExtension()
-        const filename = `${prefix}${ts}.${ext}`
-        const tmpPath = this.getTmpPath(filename)
+    writeToFile() {
+        const tmpPath = this.getTmpPath()
 
         if (this.frames.length === 1) {
             return new Promise((resolve, reject) => {
                 this.toJimp().write(tmpPath, err => {
                     if (err) return reject(err)
-                    resolve(filename)
+                    resolve(this.filename)
                 })
             })
         }
 
-        return GifUtil.write(tmpPath, this.toGifFrames()).then(() => filename)
+        return GifUtil.write(tmpPath, this.toGifFrames()).then(() => this.filename)
     }
 
     // transformation should return Frame, Frame[] or a Promise of either
@@ -75,8 +82,8 @@ class Image {
         return this.toJimp().getExtension()
     }
 
-    getTmpPath(filename) {
-        return TMP_PATH + filename
+    getTmpPath() {
+        return TMP_PATH + this.filename
     }
 
     isAnimated() {
