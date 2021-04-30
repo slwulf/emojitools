@@ -2,8 +2,13 @@ const Command = require('./command.js')
 const ImageLoader = require('../util/image-loader.js')
 
 class Resize extends Command {
-    static help() {
-        return `
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools resize --width=<n> --height=<n> <url>
+A width or a height must be provided.
+`
+            : `
 *Usage:* \`emojitools resize --width=<n> --height=<n> <url>\`
 A width or a height must be provided.
 `

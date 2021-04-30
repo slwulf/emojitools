@@ -4,8 +4,14 @@ const ImageLoader = require('../util/image-loader.js')
 const {resizeAllForCompositing} = require('../util/frame.js')
 
 class Append extends Command {
-    static help() {
-        return `
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools append [--delay=<n>] <url> <url> [<url> [<url> [...]]]
+You must pass in at least two URLs, but you can pass in as many as you like.
+Optionally pass in a --delay in ms (default is 60.)
+`
+            : `
 *Usage:* \`emojitools append [--delay=<n>] <url> <url> [<url> [<url> [...]]]\`
 You must pass in at least two URLs, but you can pass in as many as you like.
 Optionally pass in a \`--delay\` in ms (default is 60.)

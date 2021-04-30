@@ -2,8 +2,13 @@ const Command = require('./command.js')
 const ImageLoader = require('../util/image-loader.js')
 
 class Flip extends Command {
-    static help() {
-        return `
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools flip --orientation=<horizontal|vertical> <url>
+Orientation defaults to horizontal.
+`
+            : `
 *Usage:* \`emojitools flip --orientation=<horizontal|vertical> <url>\`
 Orientation defaults to horizontal.
 `

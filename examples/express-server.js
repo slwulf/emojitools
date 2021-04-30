@@ -7,7 +7,7 @@ app.use(express.json())
 
 app.post('/cli', (req, res) => {
     const {cli} = req.body
-    Emojitools.fromCommandLineInput(cli)
+    Emojitools.fromCommandLineInput(cli, { plaintext: true })
         .then(emoji => emoji.message || emoji.writeToFile())
         .then(result => res.send(result))
         .catch(err => {

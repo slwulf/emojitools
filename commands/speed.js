@@ -2,10 +2,15 @@ const Command = require('./command.js')
 const ImageLoader = require('../util/image-loader.js')
 
 class Speed extends Command {
-    static help() {
-        return `
-*Usage:* \`emojitools speed n[%] <url>\`
-_n_ is in hundredths/second. Pass in \`n%\` to adjust speed by % of original.
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools speed <n>[%] <url>
+n is in hundredths/second. Pass in n% to adjust speed by % of original.
+`
+            : `
+*Usage:* \`emojitools speed <n>[%] <url>\`
+\`n\` is in hundredths/second. Pass in \`n%\` to adjust speed by % of original.
 `
     }
 

@@ -16,7 +16,7 @@ class Command {
         return ''
     }
 
-    static help() {
+    static help(plaintext) {
         return `${this.name} has no help text.`
     }
 

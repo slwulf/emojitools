@@ -33,6 +33,7 @@ The command line interface has built-in help text for each command. Entering `em
 - **`Emojitools.fromCommandLineInput(cli[, opts])`**
     - `cli` _\(string\)_ the command line input
     - `opts` _\(object\)_ render and behavior options
+        - `plaintext` _\(boolean\)_ determines whether `emoji.message` is in plaintext or markdown. defaults to false, for markdown.
     - Returns a Promise that resolves to an [`Emoji`](models/emoji.js) instance.
 
 #### Emoji

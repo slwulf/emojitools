@@ -6,7 +6,7 @@ const Emojitools = require('./index.js')
     const [,, ...input] = process.argv
     const isDebug = input.includes('--debug')
 
-    Emojitools.fromCommandLineInput(input.join(' '))
+    Emojitools.fromCommandLineInput(input.join(' '), { plaintext: true })
         .then(emoji => (
             emoji.message ? console.log(emoji.message) : emoji.saveToDisk()
         ))

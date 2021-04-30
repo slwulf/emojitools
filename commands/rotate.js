@@ -2,8 +2,13 @@ const Command = require('./command.js')
 const ImageLoader = require('../util/image-loader.js')
 
 class Rotate extends Command {
-    static help() {
-        return `
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools rotate <degrees> --direction=<clockwise|counterclockwise> <url>
+Direction defaults to clockwise.
+`
+            : `
 *Usage:* \`emojitools rotate <degrees> --direction=<clockwise|counterclockwise> <url>\`
 Direction defaults to clockwise.
 `

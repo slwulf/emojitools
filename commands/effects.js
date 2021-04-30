@@ -55,8 +55,13 @@ const effectsConfig = {
 }
 
 class Effects extends Command {
-    static help() {
-        return `
+    static help(plaintext) {
+        return plaintext
+            ? `
+Usage: emojitools effects <effect> [effect [effect [...]]] <url>
+Known effects: ${Object.keys(effectsConfig).sort().join(', ')}
+`
+            : `
 *Usage:* \`emojitools effects <effect> [effect [effect [...]]] <url>\`
 _Known effects:_ ${Object.keys(effectsConfig).sort().join(', ')}
 `
