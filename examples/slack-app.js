@@ -10,15 +10,16 @@ const app = new Bolt.App({
 app.command('/emojitools', async ({ command, ack, say }) => {
     await ack()
 
-    const image = await Emojitools.fromCommandLineInput(command.text)
-    const filepath = await image.writeToFile()
+    const emoji = await Emojitools.fromCommandLineInput(command.text)
+
+    if (emoji.message) return say(emoji.message)
 
     await app.client.files.upload({
-        filename: image.filename,
-        file: fs.createReadStream(filepath),
+        filename: 'my-cool-file-upload',
+        file: emoji.saveToReadStream(),
         channels: [/* channel IDs */]
     })
 
-    await say('Done!');
+    say('Done!');
 })
 

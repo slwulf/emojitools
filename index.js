@@ -1,3 +1,5 @@
+const Emoji = require('./models/emoji.js')
+
 const commands = require('fs').readdirSync('./commands')
         .filter(fn => fn.indexOf('command') !== 0)
         .map(fn => fn.replace('.js', ''))
@@ -6,12 +8,12 @@ async function Emojitools(command, inputs, flags) {
     const isDebug = flags.hasOwnProperty('debug')
     const Command = loadCommand(command, isDebug)
 
-    if (command === '--help') return getHelpDoc()
+    if (command === '--help') return Emoji(getHelpDoc())
     if (Command.constructor.name === 'Error') throw Command
 
-    if (flags.hasOwnProperty('help')) return getHelpDoc(Command)
+    if (flags.hasOwnProperty('help')) return Emoji(getHelpDoc(Command))
 
-    return new Command(inputs, flags).render()
+    return Emoji(null, await new Command(inputs, flags).render())
 }
 
 Emojitools.fromCommandLineInput = function(cli) {

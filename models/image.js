@@ -52,8 +52,8 @@ class Image {
 
     /** CORE */
 
-    writeToFile() {
-        const tmpPath = this.getTmpPath()
+    writeToFile(filepath) {
+        const tmpPath = filepath || this.getTmpPath()
 
         if (this.frames.length === 1) {
             return new Promise((resolve, reject) => {
