@@ -1,6 +1,7 @@
+const path = require('path')
 const Emoji = require('./models/emoji.js')
 
-const commands = require('fs').readdirSync('./commands')
+const commands = require('fs').readdirSync(path.join(__dirname, 'commands'))
         .filter(fn => fn.indexOf('command') !== 0)
         .map(fn => fn.replace('.js', ''))
 
